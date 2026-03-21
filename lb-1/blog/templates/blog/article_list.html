@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Список статей</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .article { border-bottom: 1px solid #ccc; padding-bottom: 15px; margin-bottom: 15px; }
+        .pagination { margin-top: 20px; text-align: center; }
+        .search-form { margin-bottom: 30px; padding: 15px; background: #f5f5f5; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <h1>Блог</h1>
+
+    <div class="search-form">
+        <form method="GET" action="">
+            <input type="text" name="q" value="{{ search_query }}" placeholder="Пошук за ключовими словами..." size="40">
+            <button type="submit">Шукати</button>
+            {% if search_query %}
+                <a href="?">Скинути пошук</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <div>
+        {% for post in page_obj %}
+            <div class="article">
+                <h2>{{ post.title }}</h2>
+                <small>
+                    Категорія: {{ post.category.name|default:"Без категорії" }} | 
+                    Опубліковано: {{ post.published|date:"d.m.Y H:i" }}
+                </small>
+                <p>{{ post.content|truncatewords:30 }}</p>
+            </div>
+        {% empty %}
+            <p>За вашим запитом статей не знайдено.</p>
+        {% endfor %}
+    </div>
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1&q={{ search_query }}">&laquo; перша</a>
+                <a href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}">попередня</a>
+            {% endif %}
+
+            <span class="current">
+                Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}&q={{ search_query }}">наступна</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}&q={{ search_query }}">остання &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+
+</body>
+</html>

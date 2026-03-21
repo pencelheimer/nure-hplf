@@ -1,0 +1,11 @@
+serve:
+    uv run manage.py runserver
+
+seed-db:
+    uv run seed.py
+
+supervise:
+    uv run manage.py createsuperuser
+
+migrate:
+    uv run manage.py migrate
