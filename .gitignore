@@ -1,2 +1,5 @@
 __pycache__/
 /pz-2/src/build/app.js
+/lb-2/data.db
+/lb-2/backend/node_modules
+/lb-2/frontend/node_modules
