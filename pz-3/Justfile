@@ -1,0 +1,19 @@
+default:
+    just --list
+
+# Build APK
+build:
+    ./gradlew assembleDebug
+
+# Build + install + launch
+run: build
+    ./gradlew installDebug
+    adb shell am start -n com.pz3.app/.MainActivity
+
+# Wipe build cache
+clean:
+    ./gradlew clean
+
+# Stream app logs
+logs:
+    adb logcat --pid=$(adb shell pidof -s com.pz3.app) || adb logcat -s AndroidRuntime:E
