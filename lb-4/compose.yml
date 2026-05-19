@@ -1,0 +1,62 @@
+services:
+  db:
+    build: ./db
+    command: ["postgres", "-c", "app.jwt_secret=${JWT_SECRET:-change-me-in-production-min-32-chars}"]
+    environment:
+      POSTGRES_DB: social
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d social"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    image: ghcr.io/amacneil/dbmate:latest
+    environment:
+      DATABASE_URL: "postgres://postgres:postgres@db:5432/social?sslmode=disable"
+    volumes:
+      - ./db:/db
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["up"]
+    restart: "no"
+
+  postgrest:
+    image: postgrest/postgrest:latest
+    environment:
+      PGRST_LOG_LEVEL: "info"
+      PGRST_LOG_QUERY: "true"
+      PGRST_DB_URI: "postgres://authenticator:authenticator@db:5432/social"
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_DB_SCHEMA: public
+      PGRST_JWT_SECRET: "${JWT_SECRET:-change-me-in-production-min-32-chars}"
+      PGRST_OPENAPI_SERVER_PROXY_URI: "http://localhost:8080/api"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  dozzle:
+    image: amir20/dozzle:latest
+    volumes:
+      - ${XDG_RUNTIME_DIR}/podman/podman.sock:/var/run/docker.sock:ro
+    environment:
+      DOZZLE_BASE: /logs
+
+  gateway:
+    image: caddy:2-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./gateway/Caddyfile:/etc/caddy/Caddyfile
+      - ./gateway/docs.html:/srv/docs.html
+    depends_on:
+      - postgrest
+      - dozzle
+
+volumes:
+  db_data:

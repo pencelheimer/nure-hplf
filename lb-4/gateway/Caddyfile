@@ -1,0 +1,30 @@
+:80 {
+    log {
+        output stdout
+        format json
+    }
+
+    # REST API
+    handle /api/* {
+        uri strip_prefix /api
+        reverse_proxy postgrest:3000
+    }
+
+    # OpenAPI spec root
+    handle /api {
+        uri strip_prefix /api
+        reverse_proxy postgrest:3000
+    }
+
+    # Log viewer UI — Dozzle, proxied with base path /logs
+    handle /logs* {
+        reverse_proxy dozzle:8080
+    }
+
+    # Scalar API reference UI
+    handle /docs {
+        root * /srv
+        rewrite * /docs.html
+        file_server
+    }
+}

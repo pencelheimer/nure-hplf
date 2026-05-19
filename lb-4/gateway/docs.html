@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Social Network API</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+
+    <script>
+      fetch('/api/')
+        .then(r => r.json())
+        .then(spec => {
+          spec.components ??= {}
+          spec.components.securitySchemes = {
+            JWT: {
+              type: 'http',
+              scheme: 'bearer',
+              bearerFormat: 'JWT',
+              description: 'Paste the token returned by /rpc/login or /rpc/register',
+            },
+          }
+          spec.security = [{ JWT: [] }, {}]
+
+          Scalar.createApiReference('#app', {
+            spec: { content: spec },
+            authentication: {
+              preferredSecurityScheme: 'JWT',
+            },
+          })
+        })
+    </script>
+  </body>
+</html>

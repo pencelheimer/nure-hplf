@@ -1,0 +1,8 @@
+mod infra       'just/infra.just'
+mod auth        'just/auth.just'
+mod data        'just/data.just'
+mod monitoring  'just/monitoring.just'
+
+# List all available recipes
+default:
+    @just --list
