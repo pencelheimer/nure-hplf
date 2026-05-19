@@ -1,0 +1,15 @@
+# List all recipes
+default:
+    just --list backend
+
+# Install backend dependencies
+install:
+    npm install
+
+# Run backend dev server with live reload
+dev:
+    npm run dev
+
+# Remove backend build artifacts and node_modules
+clean:
+    rm -rf dist node_modules

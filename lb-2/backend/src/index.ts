@@ -21,11 +21,4 @@ app.use("/api/messages", messagesRouter);
 app.use("/api/search", searchRouter);
 app.use("/api/events", eventsRouter);
 
-// NOTE(pencelheimer): serve compiled frontend if exists
-const distPath = path.join(__dirname, "../../frontend/dist");
-app.use(express.static(distPath));
-app.get("*", (_req, res) => {
-  res.sendFile(path.join(distPath, "index.html"));
-});
-
 app.listen(PORT, () => console.log(`Server: http://localhost:${PORT}`));

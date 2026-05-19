@@ -1,0 +1,15 @@
+# List all recipes
+default:
+    just
+
+# Install frontend dependencies
+install:
+    npm install
+
+# Run Vite dev server
+dev:
+    npm run dev
+
+# Remove frontend build artifacts and node_modules
+clean:
+    rm -rf dist node_modules

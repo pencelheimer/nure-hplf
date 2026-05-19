@@ -1,0 +1,23 @@
+# List all recipes
+default:
+    just --list mobile
+
+host_device := `ip route get 1 | awk '{printf $7}'`
+port := "3001"
+
+# Build APK targeting a device on the local network
+build:
+    ./gradlew assembleDebug -PapiHost={{ host_device }} -PapiPort={{ port }}
+
+# Build + install + launch
+run: build
+    ./gradlew installDebug -PapiHost={{ host_device }} -PapiPort={{ port }}
+    adb shell am start -n com.social.app/.MainActivity
+
+# Wipe mobile build cache
+clean:
+    ./gradlew clean
+
+# Stream app logs
+logs:
+    adb logcat --pid=$(adb shell pidof -s com.social.app) || adb logcat -s AndroidRuntime:E

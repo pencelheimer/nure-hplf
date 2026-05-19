@@ -3,3 +3,5 @@ __pycache__/
 /lb-2/data.db
 /lb-2/backend/node_modules
 /lb-2/frontend/node_modules
+/lb-2/mobile/.gradle
+/lb-2/mobile/app/build

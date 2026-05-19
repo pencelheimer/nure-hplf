@@ -1,39 +1,22 @@
 set dotenv-load
 
-# Install dependencies for both backend and frontend
-install:
-    npm --prefix backend install
-    npm --prefix frontend install
+export PORT := "3001"
+
+mod backend
+mod frontend
+mod mobile
+
+# List all recipes
+default:
+    just --list
+
+# Install dependencies for all components
+install: backend::install frontend::install
 
 # Run backend and frontend dev servers in parallel
-dev:
-    just --justfile {{justfile()}} backend & just --justfile {{justfile()}} frontend
+[parallel]
+dev: backend::dev frontend::dev
 
-# Run backend dev server
-backend:
-    npm --prefix backend run dev
-
-# Run frontend dev server
-frontend:
-    npm --prefix frontend run dev
-
-# Type-check both
-check:
-    npm --prefix backend exec tsc -- --noEmit
-    npm --prefix frontend exec tsc -- --noEmit
-
-# Build frontend, then compile backend
-build:
-    npm --prefix frontend run build
-    npm --prefix backend run build
-
-# Start production server (requires build first)
-start:
-    npm --prefix backend run start
-
-# Build and start production server
-prod: build start
-
-# Remove build artifacts and database
-clean:
-    rm -rf backend/dist frontend/dist backend/node_modules frontend/node_modules data.db
+# Remove all build artifacts, node_modules, and the database
+clean: backend::clean frontend::clean mobile::clean
+    rm -f data.db
